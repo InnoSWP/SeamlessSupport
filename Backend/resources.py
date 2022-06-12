@@ -6,8 +6,11 @@ from telegram_sender import sender
 
 
 class Users(Resource):
-    def get(self, email):
-        user_id, data = firebase.get_user(email)
+    def get(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('email', required=True)
+        args = parser.parse_args()
+        user_id, data = firebase.get_user(args['email'])
         return data
 
     def post(self):

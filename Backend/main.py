@@ -85,8 +85,8 @@ def left(message):
 
 # common access
 api.add_resource(resources.Users, '/api/v1/users')  # get, post
-api.add_resource(resources.Volunteer, '/api/v1/volunteers/<int:volunteer_id>')  # get, post, delete, update
-api.add_resource(resources.Question, '/api/v1/question/')  # get, post, delete, update
+api.add_resource(resources.Volunteer, '/api/v1/volunteers/<int:volunteer_id>')  # get, post, delete
+api.add_resource(resources.Question, '/api/v1/question/')  # post
 
 
 if __name__ == '__main__':

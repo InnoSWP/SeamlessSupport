@@ -1,4 +1,5 @@
 from datetime import timedelta
+import requests
 
 from flask import Flask, render_template, request, redirect, url_for, session
 from flask_socketio import SocketIO, join_room, leave_room, emit
@@ -29,11 +30,11 @@ def index():
 def send():
     parser = reqparse.RequestParser()
     parser.add_argument('volunteer_id', required=True, type=int)
-    parser.add_argument('answer', required=True, type=int)
+    parser.add_argument('answer', required=True)
+    parser.add_argument('channel_message_id', required=True, type=int)
     args = parser.parse_args()
 
-    channel_message_id = firebase.get_volunteer_questions(args['volunteer_id'])[0]['channel_message_id']
-    user_email = firebase.get_user_email(channel_message_id)
+    user_email = firebase.get_user_email(args['channel_message_id'])
     firebase.volunteer_answered(args['volunteer_id'], args['answer'])
 
     room = user_email
@@ -70,6 +71,12 @@ def join(message):
 
 @socketio.on('text', namespace='/chat')
 def text(message):
+    question_json = {
+        'user_email': session.get('email'),
+        'question': message['msg']
+    }
+    requests.post('http://127.0.0.1:5000/api/v1/question/', json=question_json)
+
     room = session.get('room')
     emit('message', {'msg': session.get('email') + ' : ' + message['msg']}, room=room)
 

@@ -64,7 +64,7 @@ def get_user_email(channel_message_id: int):
 
 def volunteer_accepted(channel_message_id: int, user_message_id: int, volunteer_id: int) -> None:
     ref = db.reference('/questions/open')
-    ref_child = ref.push()
+    ref_child = ref.child(f'{volunteer_id}')
     ref_child.set(
         {
             'volunteer_id': volunteer_id,

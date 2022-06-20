@@ -6,7 +6,7 @@ import io from "socket.io-client";
 const SupportWindows = props => {
     const[Show,setShow]=useState(true)
     const [email,setEmail]=useState("")
-    const socket = io.connect ("");
+    const socket = io.connect ("127.0.0.1:5000");
     return (
         <div  className='transition-5'
         style={{...{visibility:props.visible?'visible':'hidden'},...styles.supportWindow

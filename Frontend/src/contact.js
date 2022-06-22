@@ -10,16 +10,19 @@ const contact = () => {
              
            
            <br/>
+           <div className="contact-icon">
             <a href="https://www.facebook.com/laith.alebrahim.9" class="fa fa-facebook"></a>
             <a href="https://www.instagram.com/laith.alebrahim/" class="fa fa-instagram"></a>
             <a href="https://www.linkedin.com/in/laith-alebrahim-597846225/" class="fa fa-linkedin"></a>
+           
+            </div>
             <br></br>
             <br></br>
             <br></br>
             <br></br>
                              
+        
             <div className="rights">&copy;All rights until 2024</div>
-            <div class="clear"></div>
         </div>
             </div>
     

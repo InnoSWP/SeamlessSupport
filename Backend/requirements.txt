@@ -9,3 +9,5 @@ python-socketio==4.6.0
 flask_restful==0.3.9
 firebase_admin==5.2.0
 python-dotenv==0.19.2
+summa==1.2.0
+multi_rake==0.0.2

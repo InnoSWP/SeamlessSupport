@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <title>Support Chat</title>
+  <!--Link to CSS -->
+
+  <link href="./css/sign.css" rel="stylesheet">
+</head>
+
+<body class="text-center">
+    <div class="center">
+
+   
+        <h1 >Chat Supporter</h2>
+  <form class="form-signin" id="frm"  >
+    <div class="content">
+        <input type="text" id="email" name="email" class="form-control"  required> </input>
+        <span></span>
+        <label for="email">Email</label>
+  
+    </div>
+    <button class="btn" value="submit" id="myButton"  >Start Chat</button>
+  </form>
+ 
+</div>
+</body>
+
+</html>
+
+<script type="text/javascript">
+    document.getElementById("myButton").onclick = function () {
+      const regEx = /[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,8}(.[a-z{2,8}])?/g;
+      if(regEx.test(document.getElementById("email").value)){
+        document.getElementById("frm").action="chat.html";
+
+      }else{
+        alert("Invalid Email");
+      }
+
+    
+
+}
+document.getElementById("frm").onsubmit = function () {
+        const regEx = /[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,8}(.[a-z{2,8}])?/g;
+      if(regEx.test(document.getElementById("email").value)){
+    
+        document.getElementById("frm").action="chat.html";
+      }else{
+        alert("Invalid Email");
+      }
+      }
+     
+   
+</script>

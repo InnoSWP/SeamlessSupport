@@ -7,6 +7,8 @@ from firebase_admin import db
 from collections import OrderedDict
 import dotenv
 
+from telegram_sender import sender
+
 dotenv.load_dotenv(dotenv.find_dotenv())
 
 cred_obj = firebase_admin.credentials.Certificate('seamless-support-firebase-adminsdk.json')
@@ -30,68 +32,103 @@ def add_user(email: str) -> None:
     )
 
 
-def add_question(question: str, channel_message_id: int, user_email: str) -> None:
-    ref = db.reference('/questions')
-    ref_child = ref.child(f'{channel_message_id}')
-    ref_child.set(
+def get_user(user_id: str) -> dict or None:
+    ref = db.reference(f'/users/{user_id}')
+    res: OrderedDict = ref.get()
+    if res is None:
+        return None
+    user_id, res_dict = res.popitem()
+    res_dict['user_id'] = user_id
+    return res_dict
+
+
+def get_user_dialogue(user_id: str) -> list[dict]:
+    ref = db.reference('/current-dialogues/' + user_id)
+    res: OrderedDict = ref.get()
+    return list(res.values()) if (res is not None) else []
+
+
+def send_user_message(user_id: str, message: str) -> None:
+    message_count = __get_message_count(user_id, is_user=True)
+    if message_count == 0:
+        __create_frequent_question(user_id, message)
+    __send_message(user_id, message, True)
+
+
+def send_volunteer_message(channel_message_id: int, volunteer_id: int, message: str) -> None:
+    user_id = __get_user_id_by_channel_message_id(channel_message_id)
+    message_count = __get_message_count(user_id, is_user=False)
+    if message_count == 0:
+        __answer_frequent_question(channel_message_id, volunteer_id, message)
+    __send_message(user_id, message, False)
+
+
+def close_dialogue(user_id: str) -> None:
+    ref_current = db.reference('/current-dialogues/' + user_id)
+    ref_closed = db.reference('/closed-dialogues/' + user_id)
+    ref_closed.push(ref_current.get())
+    ref_current.delete()
+
+
+def volunteer_accepted(channel_message_id: int, volunteer_id: int) -> None:
+    ref = db.reference(f'/volunteer/{volunteer_id}/dialogues')
+    ref.child(str(channel_message_id)).set(
         {
-            "channel_message_id": channel_message_id,
-            "user_email": user_email,
-            "question": question,
-            "volunteer_id": 0,
-            "answer": ""
+            'user_id': __get_user_id_by_channel_message_id(channel_message_id)
         }
     )
 
 
-def get_user(email: str) -> tuple or None:
-    ref = db.reference('/users')
-    res: OrderedDict = ref.order_by_child('email').equal_to(email).limit_to_first(1).get()
-    return res.popitem() if res else None
-
-
-def get_volunteer_questions(volunteer_id: int):
-    ref = db.reference('/questions/open')
-    res: OrderedDict = ref.order_by_child('volunteer_id').equal_to(volunteer_id).get()
-    return list(res.values())
-
-
-def get_user_email(channel_message_id: int):
-    ref = db.reference(f'/questions/{channel_message_id}')
-    res: dict = ref.get()
-    return res.get('email') if type(res) == dict else None
-
-
-def volunteer_accepted(channel_message_id: int, user_message_id: int, volunteer_id: int) -> None:
-    ref = db.reference('/questions/open')
-    ref_child = ref.child(f'{volunteer_id}')
-    ref_child.set(
-        {
-            'volunteer_id': volunteer_id,
-            'user_message_id': user_message_id,
-            'channel_message_id': channel_message_id
-        }
-    )
-
-
-def volunteer_declined(volunteer_id: int) -> None:
-    ref = db.reference(f'/questions/open/{volunteer_id}')
+def volunteer_declined(channel_message_id: int, volunteer_id: int) -> None:
+    ref = db.reference(f'/volunteer/{volunteer_id}/dialogues/{channel_message_id}')
     ref.delete()
 
 
-def volunteer_answered(volunteer_id: int, answer: str) -> None:
-    ref = db.reference(f'/questions/open/{volunteer_id}')
-    res: dict = ref.get()
+def get_volunteer_dialogues(volunteer_id: int) -> list[dict]:
+    ref = db.reference(f'/volunteer/{volunteer_id}/dialogues')
+    res: OrderedDict = ref.get()
+    return list(res.values())
 
-    ref = db.reference(f'/questions/{res["channel_message_id"]}')
-    ref.update(
+
+def __send_message(user_id: str, message: str, is_user: bool) -> None:
+    ref = db.reference('/current-dialogues/' + user_id)
+    ref_child = ref.push()
+    ref_child.set(
         {
-            "volunteer_id": volunteer_id,
-            "answer": answer
+            'message': message,
+            'is_user': is_user
         }
     )
 
-    volunteer_declined(volunteer_id)
+
+def __create_frequent_question(user_id: str, message: str) -> None:
+    ref = db.reference('/frequent-questions')
+    message_id = sender.send_question(message)
+    ref.child(str(message_id)).set(
+        {
+            'user_id': user_id,
+            'question': message,
+            'message_id': message_id
+        }
+    )
 
 
+def __answer_frequent_question(channel_message_id: int, volunteer_id: int, message: str) -> None:
+    ref = db.reference(f'/frequent-questions/{channel_message_id}')
+    ref.update(
+        {
+            'volunteer_id': volunteer_id,
+            'answer': message
+        }
+    )
 
+
+def __get_message_count(user_id: str, is_user: bool) -> int:
+    res: list = get_user_dialogue(user_id)
+    return len(list(filter(lambda d: d['is_user'] == is_user, res))) if (res is not None) else 0
+
+
+def __get_user_id_by_channel_message_id(channel_message_id: int) -> str or None:
+    ref = db.reference(f'/frequent-questions/{channel_message_id}')
+    res: OrderedDict = ref.get()
+    return res['user_id'] if (res is not None) else None

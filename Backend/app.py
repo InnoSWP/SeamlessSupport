@@ -91,9 +91,12 @@ def left(message):
 
 
 # common access
-api.add_resource(resources.Users, '/api/v1/users')  # get, post
-api.add_resource(resources.Volunteer, '/api/v1/volunteers/<int:volunteer_id>')  # get, post, delete
-api.add_resource(resources.Question, '/api/v1/question/')  # post
+api.add_resource(resources.CreateUser, '/api/v1/users')  # post
+api.add_resource(resources.Users, '/api/v1/users/<str:user_id>')  # get
+api.add_resource(resources.UserDialogues, '/api/v1/users/<str:user_id>/dialogues')  # get, delete
+api.add_resource(resources.Volunteer, '/api/v1/volunteers/<int:volunteer_id>')  # get
+api.add_resource(resources.VolunteerAccepted, '/api/v1/volunteers/<int:volunteer_id>/accepted/<int:channel_message_id>')  # post
+api.add_resource(resources.VolunteerDeclined, '/api/v1/volunteers/<int:volunteer_id>/declined/<int:channel_message_id>')  # post
 
 
 if __name__ == '__main__':

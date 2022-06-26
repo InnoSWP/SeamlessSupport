@@ -56,7 +56,7 @@ def send_user_message(user_id: str, message: str) -> None:
 
 
 def send_volunteer_message(channel_message_id: int, volunteer_id: int, message: str) -> None:
-    user_id = __get_user_id_by_channel_message_id(channel_message_id)
+    user_id = get_user_id_by_channel_message_id(channel_message_id)
     message_count = __get_message_count(user_id, is_user=False)
     if message_count == 0:
         __answer_frequent_question(channel_message_id, volunteer_id, message)
@@ -74,7 +74,7 @@ def volunteer_accepted(channel_message_id: int, volunteer_id: int) -> None:
     ref = db.reference(f'/volunteer/{volunteer_id}/dialogues')
     ref.child(str(channel_message_id)).set(
         {
-            'user_id': __get_user_id_by_channel_message_id(channel_message_id)
+            'user_id': get_user_id_by_channel_message_id(channel_message_id)
         }
     )
 
@@ -128,7 +128,13 @@ def __get_message_count(user_id: str, is_user: bool) -> int:
     return len(list(filter(lambda d: d['is_user'] == is_user, res))) if (res is not None) else 0
 
 
-def __get_user_id_by_channel_message_id(channel_message_id: int) -> str or None:
+def get_user_id_by_channel_message_id(channel_message_id: int) -> str or None:
     ref = db.reference(f'/frequent-questions/{channel_message_id}')
     res: OrderedDict = ref.get()
     return res['user_id'] if (res is not None) else None
+
+
+def get_user_id_by_email(email: str) -> str or None:
+    ref = db.reference('/users')
+    res: OrderedDict = ref.order_by_child('email').equal_to(email).limit_to_first(1).get()
+    return res.popitem()[0] if res else None

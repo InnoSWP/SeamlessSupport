@@ -1,3 +1,4 @@
+import requests
 from flask import jsonify
 from flask_restful import Resource, reqparse, abort
 
@@ -24,7 +25,7 @@ class UserDialogues(Resource):
         return firebase.get_user_dialogue(user_id)
 
     def delete(self, user_id: str):
-        firebase.close_dialogue(user_id=user_id)
+        firebase.user_closed_dialogue(user_id=user_id)
 
 
 class Dialogue(Resource):
@@ -44,6 +45,7 @@ class Dialogue(Resource):
             assert args.get('volunteer_id') is not None
             assert args.get('channel_message_id') is not None
             firebase.send_volunteer_message(args['channel_message_id'], args['volunteer_id'], args['message'])
+            requests.post('http://127.0.0.1:5000/answer', json={'answer': args['message'], 'channel_message_id': args['channel_message_id']})
 
     def get(self) -> list:
         parser = reqparse.RequestParser()
@@ -51,6 +53,11 @@ class Dialogue(Resource):
         args = parser.parse_args()
 
         return firebase.get_user_dialogue(args['user_id'])
+
+
+class FrequentQuestions(Resource):
+    def get(self, channel_message_id: int):
+        return firebase.get_frequent_message(channel_message_id)
 
 
 class Volunteer(Resource):
@@ -66,3 +73,12 @@ class VolunteerAccepted(Resource):
 class VolunteerDeclined(Resource):
     def post(self, volunteer_id: int, channel_message_id: int):
         firebase.volunteer_declined(channel_message_id=channel_message_id, volunteer_id=volunteer_id)
+
+
+class VolunteerClosed(Resource):
+    def post(self, volunteer_id: int, channel_message_id: int):
+        firebase.close_dialogue(
+            user_id=firebase.get_user_id_by_channel_message_id(channel_message_id),
+            volunteer_id=volunteer_id,
+            channel_message_id=channel_message_id
+        )

@@ -63,18 +63,28 @@ def send_volunteer_message(channel_message_id: int, volunteer_id: int, message: 
     __send_message(user_id, message, False)
 
 
-def close_dialogue(user_id: str) -> None:
+def close_dialogue(user_id: str, volunteer_id: int, channel_message_id: int) -> None:
     ref_current = db.reference('/current-dialogues/' + user_id)
     ref_closed = db.reference('/closed-dialogues/' + user_id)
     ref_closed.push(ref_current.get())
     ref_current.delete()
+    ref_volunteer = db.reference(f'/volunteer/{volunteer_id}/dialogues/{channel_message_id}')
+    ref_volunteer.delete()
+
+
+def user_closed_dialogue(user_id: str):
+    ref = db.reference('/frequent-questions')
+    res: OrderedDict = ref.order_by_child('user_id').equal_to(user_id).limit_to_last(1).get()
+    json = res.popitem()[1]
+    close_dialogue(user_id, json['volunteer_id'], json['message_id'])
 
 
 def volunteer_accepted(channel_message_id: int, volunteer_id: int) -> None:
     ref = db.reference(f'/volunteer/{volunteer_id}/dialogues')
     ref.child(str(channel_message_id)).set(
         {
-            'user_id': get_user_id_by_channel_message_id(channel_message_id)
+            'user_id': get_user_id_by_channel_message_id(channel_message_id),
+            'channel_message_id': channel_message_id
         }
     )
 
@@ -88,6 +98,11 @@ def get_volunteer_dialogues(volunteer_id: int) -> list[dict]:
     ref = db.reference(f'/volunteer/{volunteer_id}/dialogues')
     res: OrderedDict = ref.get()
     return list(res.values())
+
+
+def get_frequent_message(channel_message_id: int):
+    ref = db.reference(f'/frequent-questions/{channel_message_id}')
+    return ref.get()
 
 
 def __send_message(user_id: str, message: str, is_user: bool) -> None:

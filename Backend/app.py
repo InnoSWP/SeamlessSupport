@@ -29,13 +29,11 @@ def index():
 @app.route('/answer', methods=['POST'])
 def send():
     parser = reqparse.RequestParser()
-    parser.add_argument('volunteer_id', required=True, type=int)
     parser.add_argument('answer', required=True)
     parser.add_argument('channel_message_id', required=True, type=int)
     args = parser.parse_args()
 
     user_id = firebase.get_user_id_by_channel_message_id(args['channel_message_id'])
-    firebase.send_volunteer_message(args['channel_message_id'], args['volunteer_id'], args['answer'])
 
     room = user_id
     socketio.emit(
@@ -95,6 +93,9 @@ api.add_resource(resources.UserDialogues, '/api/v1/users/<string:user_id>/dialog
 api.add_resource(resources.Volunteer, '/api/v1/volunteers/<int:volunteer_id>')  # get
 api.add_resource(resources.VolunteerAccepted, '/api/v1/volunteers/<int:volunteer_id>/accepted/<int:channel_message_id>')  # post
 api.add_resource(resources.VolunteerDeclined, '/api/v1/volunteers/<int:volunteer_id>/declined/<int:channel_message_id>')  # post
+api.add_resource(resources.VolunteerClosed, '/api/v1/volunteers/<int:volunteer_id>/closed/<int:channel_message_id>')  # post
+api.add_resource(resources.FrequentQuestions, '/api/v1/frequent-questions/<int:channel_message_id>')  # get
+api.add_resource(resources.Dialogue, '/api/v1/dialogues/send-message')  # post
 
 if __name__ == '__main__':
     socketio.run(app)

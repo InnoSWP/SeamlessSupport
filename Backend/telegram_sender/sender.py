@@ -33,7 +33,7 @@ def send_question(question_test: str) -> int:
 
     markup = types.InlineKeyboardMarkup()
     markup.add(types.InlineKeyboardButton('✅ Answer the question', callback_data='answerQuestion'))
-    message = bot.send_message(CHANNEL_ID, f'Question #1\n\n{question_test}', reply_markup=markup)
+    message = bot.send_message(CHANNEL_ID, f'New question\n\n{question_test}', reply_markup=markup)
 
     # bot.close()
 

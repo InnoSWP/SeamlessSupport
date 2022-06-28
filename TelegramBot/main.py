@@ -1,5 +1,6 @@
 import logging
 from os import getenv
+from asyncio import sleep
 
 import dotenv
 from aiogram import Bot, Dispatcher, executor
@@ -11,7 +12,6 @@ import requests
 from BotFunctions import filters
 from BotFunctions import generators
 
-
 # Configure logging
 logging.basicConfig(
     format='%(asctime)s %(levelname)-8s %(message)s',
@@ -20,19 +20,16 @@ logging.basicConfig(
     filename="logs.log"
 )
 
-
 # Initialize environment variables from .env file (if it exists)
 dotenv.load_dotenv(dotenv.find_dotenv())
 BOT_TOKEN = getenv('BOT_TOKEN')
 CHANNEL_ID = getenv("CHANNEL_ID")
-
 
 # Check that critical variables are defined
 if BOT_TOKEN is None:
     logging.critical('No BOT_TOKEN variable found in project environment')
 if CHANNEL_ID is None:
     logging.critical('No CHANNEL_ID variable found in project environment')
-
 
 # Initialize bot and dispatcher
 bot = Bot(token=BOT_TOKEN)
@@ -52,6 +49,16 @@ async def start(message: Message):
     )
 
 
+@dp.message_handler(commands=['my_dialogues'])
+async def send_dialogues(message: Message):
+    user_id = message.from_user.id
+
+    await message.answer(
+        "Here is the list of dialogues that you are currently working on:",
+        reply_markup=generators.generate_user_dialogues(user_id)
+    )
+
+
 @dp.message_handler(filters.is_private_chat)
 async def volunteer_answer(message: Message):
     """
@@ -61,19 +68,24 @@ async def volunteer_answer(message: Message):
 
     user_id = message.from_user.id
     answer = message.text
-    json = requests.get(f'http://127.0.0.1:5000/api/v1/volunteers/{user_id}').json()
-    if len(json) == 1:  # If there is exactly 1 open question
-        channel_message_id = json[0]['channel_message_id']
-        user_message_id = json[0]['user_message_id']
-        json = {
-            'volunteer_id': user_id,
+
+    chat_info = await bot.get_chat(user_id)
+    pinned_message: Message = chat_info.pinned_message
+    if pinned_message.reply_markup is not None:
+        channel_message_id = pinned_message.reply_markup.inline_keyboard[0][0]['callback_data'].split('/')[1]
+        answer_json = {
+            'message': answer,
             'channel_message_id': channel_message_id,
-            'answer': answer
+            'volunteer_id': user_id,
+            'is_user': False
         }
-        requests.post(f'http://127.0.0.1:5000/answer', json=json)
-        await bot.edit_message_text("Your answer saved!", user_id, user_message_id)
-        await bot.send_message(user_id, "Thanks for your contribution!\nWe appreciate your work💕")
-        await bot.delete_message(CHANNEL_ID, channel_message_id)
+        requests.post('http://127.0.0.1:5000/api/v1/dialogues/send-message', json=answer_json)
+        await bot.edit_message_text(
+            chat_id=user_id,
+            message_id=pinned_message.message_id,
+            text=pinned_message.text + '\n>> 🧑‍💻 ' + answer,
+            reply_markup=pinned_message.reply_markup
+        )
 
 
 @dp.my_chat_member_handler(filters.is_new_channel_member)
@@ -123,26 +135,18 @@ async def answer_question(callback_query: CallbackQuery):
     user_id = callback_query.from_user.id
     message_id = callback_query.message.message_id
 
-    question_text = callback_query.message.text
-    question_text = question_text[question_text.find('\n'):].strip()
-
-    json = requests.get(f'http://127.0.0.1:5000/api/v1/volunteers/{user_id}').json()
-    if len(json) != 0:  # If volunteer already took some question
-        await callback_query.answer('Please answer your taken question first', show_alert=True)
-        return
+    requests.post(f'http://127.0.0.1:5000/api/v1/volunteers/{user_id}/accepted/{message_id}')
 
     try:
-        user_markup = generators.generate_inline_markup({'text': '❌ Cancel', 'callback_data': f'cancelAnswer,{message_id}'})
-        user_message = await bot.send_message(
+        user_markup = generators.generate_inline_markup(
+            {'text': '🔄 Reload', 'callback_data': 'reload'},
+            {'text': '❌ Cancel', 'callback_data': f'cancelDialogue/{message_id}'},
+        )
+        await bot.send_message(
             user_id,
-            f'Please provide answer to the question bellow:\n\n{question_text}',
+            f'You accepted new question! Please reload to answer, or click cancel to cancel it.',
             reply_markup=user_markup
         )
-        volunteer_json = {
-            'channel_message_id': message_id,
-            'user_message_id': user_message.message_id
-        }
-        requests.post(f'http://127.0.0.1:5000/api/v1/volunteers/{user_id}', json=volunteer_json)
     except (exceptions.CantInitiateConversation, exceptions.BotBlocked) as e:  # If user didn't start conversation
         url = f't.me/{(await bot.get_me()).username}?start=start'
         await callback_query.answer('Please start conversation with a bot', url=url)
@@ -151,20 +155,80 @@ async def answer_question(callback_query: CallbackQuery):
         await bot.edit_message_reply_markup(chat_id, message_id, reply_markup=channel_markup)
 
 
-@dp.callback_query_handler(lambda c: c.data.startswith('cancelAnswer'))
+@dp.callback_query_handler(lambda c: c.data.startswith('id/'))
+async def send_dialogue(callback_query: CallbackQuery):
+    channel_message_id = callback_query.data.split('/')[1]
+    user_id = callback_query.from_user.id
+    message_id = callback_query.message.message_id
+
+    question = requests.get(f'http://127.0.0.1:5000/api/v1/frequent-questions/{channel_message_id}').json()
+    dialogue: list[dict] = requests.get(f'http://127.0.0.1:5000/api/v1/users/{question["user_id"]}/dialogues').json()
+    message_text = 'Your messages are going to be send in current dialogue:\n'
+    for message in dialogue:
+        icon = '👤' if message['is_user'] else '🧑‍💻'
+        text = icon + ' ' + message['message']
+        message_text += text + '\n'
+
+    markup = generators.generate_inline_markup(
+        {'text': '❌️Cancel', 'callback_data': f'cid/{channel_message_id}'},
+        {'text': '🏁 Finish dialogue', 'callback_data': f'fid/{channel_message_id}'}
+    )
+    await bot.edit_message_text(
+        chat_id=user_id,
+        message_id=message_id,
+        text=message_text,
+        reply_markup=markup)
+    await bot.pin_chat_message(user_id, message_id)
+
+
+@dp.callback_query_handler(lambda c: c.data.startswith('cancelDialogue'))
 async def cancel_answer(callback_query: CallbackQuery):
     """
     Cancel message when volunteer do not want to answer it anymore
     """
 
-    channel_message_id = int(callback_query.data.split(',')[1])
+    channel_message_id = int(callback_query.data.split('/')[1])
     message_id = callback_query.message.message_id
     user_id = callback_query.from_user.id
+
+    requests.post(f'http://127.0.0.1:5000/api/v1/volunteers/{user_id}/declined/{channel_message_id}')
 
     markup = generators.generate_inline_markup({'text': '✅ Answer the question', 'callback_data': 'answerQuestion'})
     await bot.edit_message_reply_markup(CHANNEL_ID, channel_message_id, reply_markup=markup)
     await bot.edit_message_text('Answer canceled successfully', user_id, message_id)
-    requests.delete(f'http://127.0.0.1:5000/api/v1/volunteers/{user_id}')
+
+
+@dp.callback_query_handler(lambda c: c.data.startswith('cid/'))
+async def cancel_answer(callback_query: CallbackQuery):
+    message_id = callback_query.message.message_id
+    user_id = callback_query.from_user.id
+
+    await bot.unpin_chat_message(user_id, message_id)
+    await sleep(1)  # On some platforms telegram breaks without this break (e.x. Ubuntu 20)
+    await bot.edit_message_text('You successfully closed dialogue', user_id, message_id)
+    await bot.send_message(
+        chat_id=user_id,
+        text="Here is the list of dialogues that you are currently working on:",
+        reply_markup=generators.generate_user_dialogues(user_id)
+    )
+
+
+@dp.callback_query_handler(lambda c: c.data.startswith('fid/'))
+async def finish_dialogue(callback_query: CallbackQuery):
+    channel_message_id = callback_query.data.split('/')[1]
+    message_id = callback_query.message.message_id
+    user_id = callback_query.from_user.id
+
+    requests.post(f'http://127.0.0.1:5000/api/v1/volunteers/{user_id}/closed/{channel_message_id}')
+    await bot.unpin_chat_message(user_id, message_id)
+    await bot.delete_message(CHANNEL_ID, int(channel_message_id))
+    await sleep(1)  # On some platforms telegram breaks without break
+    await bot.edit_message_text('You successfully finished dialogue', user_id, message_id)
+    await bot.send_message(
+        chat_id=user_id,
+        text="Here is the list of dialogues that you are currently working on:",
+        reply_markup=generators.generate_user_dialogues(user_id)
+    )
 
 
 @dp.callback_query_handler(lambda c: c.data == 'inProgress')
@@ -174,6 +238,20 @@ async def cancel_answer(callback_query: CallbackQuery):
     """
 
     await callback_query.answer('Question is already taken')
+
+
+@dp.callback_query_handler(lambda c: c.data == 'reload')
+async def reload_message(callback_query: CallbackQuery):
+    message_id = callback_query.message.message_id
+    user_id = callback_query.from_user.id
+
+    await callback_query.answer('Dialogues reloaded successfully')
+    await bot.edit_message_text(
+        chat_id=user_id,
+        message_id=message_id,
+        text="Here is the list of dialogues that you are currently working on:",
+        reply_markup=generators.generate_user_dialogues(user_id)
+    )
 
 
 if __name__ == '__main__':

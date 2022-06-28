@@ -18,7 +18,7 @@ app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=5)
 api = Api(app)
 Session(app)
 
-socketio = SocketIO(app, manage_session=False)
+socketio = SocketIO(app, cors_allowed_origins="*")
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -29,17 +29,15 @@ def index():
 @app.route('/answer', methods=['POST'])
 def send():
     parser = reqparse.RequestParser()
-    parser.add_argument('volunteer_id', required=True, type=int)
     parser.add_argument('answer', required=True)
     parser.add_argument('channel_message_id', required=True, type=int)
     args = parser.parse_args()
 
-    user_email = firebase.get_user_email(args['channel_message_id'])
-    firebase.volunteer_answered(args['volunteer_id'], args['answer'])
+    user_id = firebase.get_user_id_by_channel_message_id(args['channel_message_id'])
 
-    room = user_email
+    room = user_id
     socketio.emit(
-        'message', {'msg': args['answer']},
+        'message', {'msg': '  Supporter: ' + args['answer']},
         room=room,
         namespace='/chat'
     )
@@ -50,14 +48,18 @@ def send():
 def chat():
     if request.method == 'POST':
         email = request.form['email']
-        password = request.form['password']
+
+        user_id = firebase.get_user_id_by_email(email)
+        if user_id is None:
+            firebase.add_user(email)
+
         # Store the data in session
         session['email'] = email
-        session['room'] = email
-        return render_template('chat.html', session=session)
+        session['room'] = firebase.get_user_id_by_email(email)
+        return render_template('./chat.html', session=session)
     else:
-        if session.get('email') is not None:
-            return render_template('chat.html', session=session)
+        if session.get('room') is not None:
+            return render_template('./chat.html', session=session)
         else:
             return redirect(url_for('index'))
 
@@ -66,35 +68,34 @@ def chat():
 def join(message):
     room = session.get('room')
     join_room(room)
-    emit('status', {'msg': session.get('email') + ' has entered the room.'}, room=room)
+    emit('status', {'msg': '  Welcome in our Support Chat'}, room=room)
 
 
 @socketio.on('text', namespace='/chat')
 def text(message):
-    question_json = {
-        'user_email': session.get('email'),
-        'question': message['msg']
-    }
-    requests.post('http://127.0.0.1:5000/api/v1/question/', json=question_json)
-
     room = session.get('room')
-    emit('message', {'msg': session.get('email') + ' : ' + message['msg']}, room=room)
+    firebase.send_user_message(room, message['msg'])
+    emit('message', {'msg': "  You" + ': ' + message['msg']}, room=room)
 
 
 @socketio.on('left', namespace='/chat')
 def left(message):
     room = session.get('room')
-    email = session.get('email')
     leave_room(room)
     session.clear()
-    emit('status', {'msg': email + ' has left the room.'}, room=room)
+    emit('status', {'msg': ' has left the room.'}, room=room)
 
 
 # common access
-api.add_resource(resources.Users, '/api/v1/users')  # get, post
-api.add_resource(resources.Volunteer, '/api/v1/volunteers/<int:volunteer_id>')  # get, post, delete
-api.add_resource(resources.Question, '/api/v1/question/')  # post
-
+api.add_resource(resources.CreateUser, '/api/v1/users')  # post
+api.add_resource(resources.Users, '/api/v1/users/<string:user_id>')  # get
+api.add_resource(resources.UserDialogues, '/api/v1/users/<string:user_id>/dialogues')  # get, delete
+api.add_resource(resources.Volunteer, '/api/v1/volunteers/<int:volunteer_id>')  # get
+api.add_resource(resources.VolunteerAccepted, '/api/v1/volunteers/<int:volunteer_id>/accepted/<int:channel_message_id>')  # post
+api.add_resource(resources.VolunteerDeclined, '/api/v1/volunteers/<int:volunteer_id>/declined/<int:channel_message_id>')  # post
+api.add_resource(resources.VolunteerClosed, '/api/v1/volunteers/<int:volunteer_id>/closed/<int:channel_message_id>')  # post
+api.add_resource(resources.FrequentQuestions, '/api/v1/frequent-questions/<int:channel_message_id>')  # get
+api.add_resource(resources.Dialogue, '/api/v1/dialogues/send-message')  # post
 
 if __name__ == '__main__':
     socketio.run(app)

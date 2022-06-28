@@ -1,56 +1,84 @@
+import requests
 from flask import jsonify
 from flask_restful import Resource, reqparse, abort
 
 import firebase
-from telegram_sender import sender
 
 
-class Users(Resource):
-    def get(self):
-        parser = reqparse.RequestParser()
-        parser.add_argument('email', required=True)
-        args = parser.parse_args()
-        user_id, data = firebase.get_user(args['email'])
-        return data
-
+class CreateUser(Resource):
     def post(self):
         parser = reqparse.RequestParser()
         parser.add_argument('email', required=True)
         args = parser.parse_args()
 
         firebase.add_user(args['email'])
-        return {}
         # TODO: somehow send email or authorise
 
 
-class Question(Resource):
-    def post(self):
+class Users(Resource):
+    def get(self, user_id: str):
+        return firebase.get_user(user_id)
+
+
+class UserDialogues(Resource):
+    def get(self, user_id: str):
+        return firebase.get_user_dialogue(user_id)
+
+    def delete(self, user_id: str):
+        firebase.user_closed_dialogue(user_id=user_id)
+
+
+class Dialogue(Resource):
+    def post(self) -> None:
         parser = reqparse.RequestParser()
-        parser.add_argument('question', required=True)
-        parser.add_argument('user_email', required=True)
+        parser.add_argument('message', required=True)
+        parser.add_argument('is_user', required=True, type=bool)
+        parser.add_argument('user_id', required=False)
+        parser.add_argument('volunteer_id', required=False, type=int)
+        parser.add_argument('channel_message_id', required=False, type=int)
         args = parser.parse_args()
-        message_id = sender.send_question(args['question'])
-        firebase.add_question(question=args['question'], channel_message_id=message_id, user_email=args['user_email'])
-        return {}
+
+        if args['is_user']:
+            assert args.get('user_id') is not None
+            firebase.send_user_message(args['user_id'], args['message'])
+        else:  # If bot send the request
+            assert args.get('volunteer_id') is not None
+            assert args.get('channel_message_id') is not None
+            firebase.send_volunteer_message(args['channel_message_id'], args['volunteer_id'], args['message'])
+            requests.post('http://127.0.0.1:5000/answer', json={'answer': args['message'], 'channel_message_id': args['channel_message_id']})
+
+    def get(self) -> list:
+        parser = reqparse.RequestParser()
+        parser.add_argument('user_id', required=True)
+        args = parser.parse_args()
+
+        return firebase.get_user_dialogue(args['user_id'])
+
+
+class FrequentQuestions(Resource):
+    def get(self, channel_message_id: int):
+        return firebase.get_frequent_message(channel_message_id)
 
 
 class Volunteer(Resource):
-    def post(self, volunteer_id: int):
-        parser = reqparse.RequestParser()
-        parser.add_argument('channel_message_id', required=True, type=int)
-        parser.add_argument('user_message_id', required=True, type=int)
-        args = parser.parse_args()
-
-        firebase.volunteer_accepted(
-            channel_message_id=args['channel_message_id'],
-            user_message_id=args['user_message_id'],
-            volunteer_id=volunteer_id
-        )
-        return {}
-
     def get(self, volunteer_id: int):
-        return firebase.get_volunteer_questions(volunteer_id=volunteer_id)
+        return firebase.get_volunteer_dialogues(volunteer_id=volunteer_id)
 
-    def delete(self, volunteer_id: int):
-        firebase.volunteer_declined(volunteer_id)
-        return {}
+
+class VolunteerAccepted(Resource):
+    def post(self, volunteer_id: int, channel_message_id: int):
+        firebase.volunteer_accepted(channel_message_id=channel_message_id, volunteer_id=volunteer_id)
+
+
+class VolunteerDeclined(Resource):
+    def post(self, volunteer_id: int, channel_message_id: int):
+        firebase.volunteer_declined(channel_message_id=channel_message_id, volunteer_id=volunteer_id)
+
+
+class VolunteerClosed(Resource):
+    def post(self, volunteer_id: int, channel_message_id: int):
+        firebase.close_dialogue(
+            user_id=firebase.get_user_id_by_channel_message_id(channel_message_id),
+            volunteer_id=volunteer_id,
+            channel_message_id=channel_message_id
+        )

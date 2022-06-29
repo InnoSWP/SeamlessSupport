@@ -245,7 +245,11 @@ async def finish_dialogue(callback_query: CallbackQuery):
     requests.post(f'http://127.0.0.1:5000/api/v1/volunteers/{user_id}/closed/{channel_message_id}')
     await bot.unpin_all_chat_messages(user_id)
     await sleep(1)  # On some platforms telegram breaks without break
-    await bot.edit_message_text('You successfully finished dialogue', user_id, message_id)
+    await bot.edit_message_text(
+        chat_id=user_id,
+        message_id=message_id,
+        text=callback_query.message.text + '\n----- Dialogue finished -----'
+    )
     message = await bot.send_message(
         chat_id=user_id,
         text="Here is the list of dialogues that you are currently working on:",

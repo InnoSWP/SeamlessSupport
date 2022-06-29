@@ -74,8 +74,16 @@ def join(message):
 @socketio.on('text', namespace='/chat')
 def text(message):
     room = session.get('room')
-    firebase.send_user_message(room, message['msg'])
-    emit('message', {'msg': "  You" + ': ' + message['msg']}, room=room)
+    answer = firebase.get_automated_answer(message['msg'])
+    if answer:
+        # TODO: think about it
+        # firebase.send_user_message(room, message['msg'], send_to_telegram=False)
+        # firebase.send_user_message(room, answer, is_user=False, send_to_telegram=False)
+        emit('message', {'msg': "  You" + ': ' + message['msg']}, room=room)
+        emit('message', {'msg': "  Supporter: " + ': ' + answer}, room=room)
+    else:
+        firebase.send_user_message(room, message['msg'])
+        emit('message', {'msg': "  You" + ': ' + message['msg']}, room=room)
 
 
 @socketio.on('left', namespace='/chat')

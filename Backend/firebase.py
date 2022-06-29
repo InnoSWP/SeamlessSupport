@@ -6,6 +6,7 @@ import firebase_admin
 from firebase_admin import db
 from collections import OrderedDict
 import dotenv
+import multi_rake
 
 from telegram_sender import sender
 
@@ -114,7 +115,7 @@ def volunteer_declined(channel_message_id: int, volunteer_id: int) -> None:
 def get_volunteer_dialogues(volunteer_id: int) -> list[dict]:
     ref = db.reference(f'/volunteer/{volunteer_id}/dialogues')
     res: OrderedDict = ref.get()
-    return list(res.values())
+    return list(res.values()) if res else None
 
 
 def get_frequent_message(channel_message_id: int):
@@ -133,6 +134,19 @@ def __send_message(user_id: str, message: str, is_user: bool) -> None:
     )
 
 
+def get_automated_answer(message: str) -> str or None:
+    keywords = __text_to_keywords(message)
+    ref = db.reference('/frequent-questions')
+    questions: OrderedDict = ref.get()
+    if questions is None:
+        return
+    for question in questions.values():
+        if question.get('answer') is None:
+            continue
+        if set(question['keywords']) == set(keywords):
+            return question['answer']
+
+
 def __create_frequent_question(user_id: str, message: str) -> None:
     ref = db.reference('/frequent-questions')
     message_id = sender.send_question(message)
@@ -141,6 +155,7 @@ def __create_frequent_question(user_id: str, message: str) -> None:
             'user_id': user_id,
             'question': message,
             'message_id': message_id,
+            'keywords': __text_to_keywords(message),
             'new_messages': 0
         }
     )
@@ -177,6 +192,11 @@ def __get_frequent_question_by_user_id(user_id: str) -> dict:
     res: OrderedDict = ref.order_by_child('user_id').equal_to(user_id).limit_to_last(1).get()
     json = res.popitem()[1]
     return json
+
+
+def __text_to_keywords(text: str) -> [str]:
+    rake = multi_rake.Rake(max_words=1, max_words_unknown_lang=1)
+    return list(map(lambda a: a[0], rake.apply(text.replace(' ', '.'))))
 
 
 def get_user_id_by_channel_message_id(channel_message_id: int) -> str or None:

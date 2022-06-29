@@ -68,7 +68,7 @@ def chat():
 def join(message):
     room = session.get('room')
     join_room(room)
-    emit('status', {'msg': '  Welcome in our Support Chat'}, room=room)
+    emit('status', {'msg': f'  Welcome in our Support Chat'}, room=room)
 
 
 @socketio.on('text', namespace='/chat')
@@ -95,7 +95,7 @@ api.add_resource(resources.VolunteerAccepted, '/api/v1/volunteers/<int:volunteer
 api.add_resource(resources.VolunteerDeclined, '/api/v1/volunteers/<int:volunteer_id>/declined/<int:channel_message_id>')  # post
 api.add_resource(resources.VolunteerClosed, '/api/v1/volunteers/<int:volunteer_id>/closed/<int:channel_message_id>')  # post
 api.add_resource(resources.FrequentQuestions, '/api/v1/frequent-questions/<int:channel_message_id>')  # get
-api.add_resource(resources.Dialogue, '/api/v1/dialogues/send-message')  # post
+api.add_resource(resources.Dialogue, '/api/v1/dialogues')  # post, get
 
 if __name__ == '__main__':
     socketio.run(app)

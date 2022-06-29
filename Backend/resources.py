@@ -22,7 +22,10 @@ class Users(Resource):
 
 class UserDialogues(Resource):
     def get(self, user_id: str):
-        return firebase.get_user_dialogue(user_id)
+        parser = reqparse.RequestParser()
+        parser.add_argument('read_messages', required=False, default=False, type=bool)
+        args = parser.parse_args()
+        return firebase.get_user_dialogue(user_id, args['read_messages'])
 
     def delete(self, user_id: str):
         firebase.user_closed_dialogue(user_id=user_id)
@@ -46,13 +49,6 @@ class Dialogue(Resource):
             assert args.get('channel_message_id') is not None
             firebase.send_volunteer_message(args['channel_message_id'], args['volunteer_id'], args['message'])
             requests.post('http://127.0.0.1:5000/answer', json={'answer': args['message'], 'channel_message_id': args['channel_message_id']})
-
-    def get(self) -> list:
-        parser = reqparse.RequestParser()
-        parser.add_argument('user_id', required=True)
-        args = parser.parse_args()
-
-        return firebase.get_user_dialogue(args['user_id'])
 
 
 class FrequentQuestions(Resource):

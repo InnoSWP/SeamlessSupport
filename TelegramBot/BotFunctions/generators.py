@@ -19,9 +19,10 @@ def generate_user_dialogues(user_id: int) -> InlineKeyboardMarkup:
     for dialogue in dialogues:
         channel_message_id = dialogue['channel_message_id']
         question = requests.get(f'http://127.0.0.1:5000/api/v1/frequent-questions/{channel_message_id}').json()
+        emoji = '❗ ' if question['new_messages'] > 0 else ''
         markup_dict.append(
             {
-                'text': question['question'],
+                'text': emoji + question['question'],
                 'callback_data': f'id/{dialogue["channel_message_id"]}'
             }
         )

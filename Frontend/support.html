@@ -9,11 +9,11 @@
 </head>
 
 <body class="text-center">
-    <div class="center">
+    <div class="center over-lay">
 
    
         <h1 >Chat Supporter</h2>
-  <form class="form-signin" id="frm"  >
+  <form class="form-signin" id="frm" >
     <div class="content">
         <input type="text" id="email" name="email" class="form-control"  required> </input>
         <span></span>
@@ -29,27 +29,35 @@
 </html>
 
 <script type="text/javascript">
+  var form = document.getElementById("frm");
     document.getElementById("myButton").onclick = function () {
       const regEx = /[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,8}(.[a-z{2,8}])?/g;
       if(regEx.test(document.getElementById("email").value)){
-        document.getElementById("frm").action="chat.html";
-
+       
+        fetch('http://127.0.0.1:5000', {
+          method: 'POST',
+         url: 'http://127.0.0.1:5000/chat'        })
+       form.setAttribute("action", "./chat.html");
       }else{
         alert("Invalid Email");
       }
-
-    
+  
 
 }
+
 document.getElementById("frm").onsubmit = function () {
         const regEx = /[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,8}(.[a-z{2,8}])?/g;
       if(regEx.test(document.getElementById("email").value)){
-    
-        document.getElementById("frm").action="chat.html";
+        fetch('http://127.0.0.1:5000', {
+          method: 'POST',
+         url: 'http://127.0.0.1:5000/chat'        })
+       form.setAttribute("action", "./chat.html");
+   
       }else{
         alert("Invalid Email");
       }
-      }
+  
+}
      
    
 </script>

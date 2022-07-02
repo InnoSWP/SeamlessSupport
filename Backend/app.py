@@ -106,3 +106,5 @@ api.add_resource(resources.VolunteerDeclined, '/api/v1/volunteers/<int:volunteer
 api.add_resource(resources.VolunteerClosed, '/api/v1/volunteers/<int:volunteer_id>/closed/<int:channel_message_id>')  # post
 api.add_resource(resources.FrequentQuestions, '/api/v1/frequent-questions/<int:channel_message_id>')  # get
 api.add_resource(resources.Dialogue, '/api/v1/dialogues')  # post, get
+
+socketio.run(app)

@@ -12,7 +12,6 @@ class CreateUser(Resource):
         args = parser.parse_args()
 
         firebase.add_user(args['email'])
-        # TODO: somehow send email or authorise
 
 
 class Users(Resource):

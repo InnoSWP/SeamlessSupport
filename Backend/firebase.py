@@ -1,5 +1,3 @@
-import os
-from json import load, dumps
 from os import getenv
 from random import choice
 from hashlib import sha3_256

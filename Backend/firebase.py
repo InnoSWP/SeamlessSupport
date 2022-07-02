@@ -1,3 +1,4 @@
+from json import load, dumps
 from os import getenv
 from random import choice
 from hashlib import sha3_256
@@ -10,7 +11,13 @@ import multi_rake
 
 from telegram_sender import sender
 
+
 dotenv.load_dotenv(dotenv.find_dotenv())
+with open('seamless-support-firebase-adminsdk.json', 'r') as file:
+    firebase_sdk = load(file)
+with open('seamless-support-firebase-adminsdk.json', 'w') as file:
+    firebase_sdk['private_key'] = getenv('FIREBASE_PRIVATE_KEY')
+    file.write(dumps(firebase_sdk, indent=4))
 
 cred_obj = firebase_admin.credentials.Certificate('seamless-support-firebase-adminsdk.json')
 default_app = firebase_admin.initialize_app(

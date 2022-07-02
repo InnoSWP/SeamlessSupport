@@ -132,9 +132,6 @@ dmypy.json
 # Test files not important for projects
 sandbox.py
 
-# Private key to FireBase Database
-seamless-support-firebase-adminsdk.json
-
 # Logs
 logs.log
 

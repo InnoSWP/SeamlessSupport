@@ -109,4 +109,4 @@ api.add_resource(resources.VolunteerClosed, '/api/v1/volunteers/<int:volunteer_i
 api.add_resource(resources.FrequentQuestions, '/api/v1/frequent-questions/<int:channel_message_id>')  # get
 api.add_resource(resources.Dialogue, '/api/v1/dialogues')  # post, get
 
-socketio.run(app, host=socket.gethostbyname(socket.gethostname()), port='3000')
+socketio.run(app, host='0.0.0.0', port='3000')

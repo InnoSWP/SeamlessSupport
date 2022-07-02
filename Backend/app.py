@@ -23,6 +23,7 @@ cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 app.config['SECRET_KEY'] = getenv('SECRET_KEY')
 app.config['SESSION_TYPE'] = 'filesystem'
+app.config['transports'] = 'websocket'
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=1)
 
 api = Api(app)

@@ -14,3 +14,4 @@ aiogram~=2.19
 trio~=0.20.0
 pytelegrambotapi==4.5.1
 eventlet==0.33.1
+gevent

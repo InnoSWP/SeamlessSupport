@@ -14,13 +14,13 @@ from telegram_sender import sender
 
 
 dotenv.load_dotenv(dotenv.find_dotenv())
-with open(os.getcwd() + '/Backend/seamless-support-firebase-adminsdk.json', 'r') as file:
+with open(os.getcwd() + '/seamless-support-firebase-adminsdk.json', 'r') as file:
     firebase_sdk = load(file)
-with open(os.getcwd() + '/Backend/seamless-support-firebase-adminsdk.json', 'w') as file:
+with open(os.getcwd() + '/seamless-support-firebase-adminsdk.json', 'w') as file:
     firebase_sdk['private_key'] = getenv('FIREBASE_PRIVATE_KEY')
     file.write(dumps(firebase_sdk, indent=4))
 
-cred_obj = firebase_admin.credentials.Certificate(os.getcwd() + '/Backend/seamless-support-firebase-adminsdk.json')
+cred_obj = firebase_admin.credentials.Certificate(os.getcwd() + '/seamless-support-firebase-adminsdk.json')
 default_app = firebase_admin.initialize_app(
     cred_obj,
     {

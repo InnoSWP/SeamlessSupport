@@ -108,4 +108,4 @@ api.add_resource(resources.FrequentQuestions, '/api/v1/frequent-questions/<int:c
 api.add_resource(resources.Dialogue, '/api/v1/dialogues')  # post, get
 
 if __name__ == '__main__':
-    socketio.run(app, host=getenv('HOST'), port=getenv('PORT'))
+    socketio.run(app, host=getenv('HOST'))

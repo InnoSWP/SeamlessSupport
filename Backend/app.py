@@ -5,15 +5,20 @@ from flask import Flask, render_template, request, redirect, url_for, session
 from flask_socketio import SocketIO, join_room, leave_room, emit
 from flask_session import Session
 from flask_restful import Api, reqparse
+import dotenv
+
+from os import getenv
 
 import resources
 import firebase
 
+dotenv.load_dotenv(dotenv.find_dotenv())
+
 app = Flask(__name__)
 app.debug = True
-app.config['SECRET_KEY'] = 'secret'
+app.config['SECRET_KEY'] = getenv('SECRET_KEY')
 app.config['SESSION_TYPE'] = 'filesystem'
-app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=5)
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=1)
 
 api = Api(app)
 Session(app)
@@ -76,9 +81,6 @@ def text(message):
     room = session.get('room')
     answer = firebase.get_automated_answer(message['msg'])
     if answer:
-        # TODO: think about it
-        # firebase.send_user_message(room, message['msg'], send_to_telegram=False)
-        # firebase.send_user_message(room, answer, is_user=False, send_to_telegram=False)
         emit('message', {'msg': "  You" + ': ' + message['msg']}, room=room)
         emit('message', {'msg': "  Supporter: " + ': ' + answer}, room=room)
     else:
@@ -106,4 +108,4 @@ api.add_resource(resources.FrequentQuestions, '/api/v1/frequent-questions/<int:c
 api.add_resource(resources.Dialogue, '/api/v1/dialogues')  # post, get
 
 if __name__ == '__main__':
-    socketio.run(app)
+    socketio.run(app, host=getenv('HOST'), port=getenv('PORT'))

@@ -4,7 +4,7 @@ from asyncio import sleep
 
 import dotenv
 from aiogram import Bot, Dispatcher, executor
-from aiogram.types import Message, CallbackQuery
+from aiogram.types import Message, CallbackQuery, ContentTypes
 from aiogram.types.chat_member_updated import ChatMemberUpdated
 import aiogram.utils.exceptions as exceptions
 import requests
@@ -306,6 +306,11 @@ async def reload_message(callback_query: CallbackQuery):
         reply_markup=generators.generate_user_dialogues(user_id)
     )
     storage[user_id] = message
+
+
+@dp.message_handler(lambda m: m.from_user.id == bot.id, content_types=ContentTypes.PINNED_MESSAGE)
+async def delete_pin(message: Message):
+    await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
 
 
 if __name__ == '__main__':

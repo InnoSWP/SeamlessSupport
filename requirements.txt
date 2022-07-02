@@ -16,3 +16,4 @@ pytelegrambotapi==4.5.1
 eventlet==0.33.1
 gevent
 gevent-websocket
+flask-cors

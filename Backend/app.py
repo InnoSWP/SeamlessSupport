@@ -4,6 +4,7 @@ import socket
 
 
 from flask import Flask, render_template, request, redirect, url_for, session
+from flask_cors import CORS
 from flask_socketio import SocketIO, join_room, leave_room, emit
 from flask_session import Session
 from flask_restful import Api, reqparse
@@ -18,6 +19,8 @@ dotenv.load_dotenv(dotenv.find_dotenv())
 
 app = Flask(__name__)
 app.debug = True
+cors = CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
 app.config['SECRET_KEY'] = getenv('SECRET_KEY')
 app.config['SESSION_TYPE'] = 'filesystem'
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=1)

@@ -44,7 +44,7 @@ def get_user(user_id: str) -> dict or None:
     return res_dict
 
 
-def get_user_dialogue(user_id: str, read_messages: bool = False) -> list[dict]:
+def get_user_dialogue(user_id: str, read_messages: bool = False) -> list:
     ref = db.reference('/current-dialogues/' + user_id)
     res: OrderedDict = ref.get()
     messages = list(res.values()) if (res is not None) else []
@@ -113,7 +113,7 @@ def volunteer_declined(channel_message_id: int, volunteer_id: int) -> None:
     )
 
 
-def get_volunteer_dialogues(volunteer_id: int) -> list[dict]:
+def get_volunteer_dialogues(volunteer_id: int) -> list:
     ref = db.reference(f'/volunteer/{volunteer_id}/dialogues')
     res: OrderedDict = ref.get()
     return list(res.values()) if res else None

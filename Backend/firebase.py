@@ -183,7 +183,7 @@ def __set_new_messages_counter(user_id: str, value: int = None):
     ref = db.reference(f'/frequent-questions/{channel_message_id}')
     ref.update(
         {
-            'new_messages': json['new_messages'] + 1 if (value is None) else 0
+            'new_messages': json['new_messages'] + 1 if (value is None or json.get('new_messages') is None) else 0
         }
     )
 

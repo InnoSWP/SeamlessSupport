@@ -505,7 +505,7 @@ iframe{
 
 
 }
-@media only screen and (max-width: 850px) and (min-width: 350px){
+@media all and (max-width: 980px) {
     .iframe{
         width: 112%;
         height: 100%;

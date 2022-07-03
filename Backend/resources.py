@@ -4,8 +4,6 @@ from flask_restful import Resource, reqparse, abort
 
 import firebase
 
-HOST_PORT = '0.0.0.0:5000'
-
 
 class CreateUser(Resource):
     def post(self):
@@ -49,8 +47,6 @@ class Dialogue(Resource):
             assert args.get('volunteer_id') is not None
             assert args.get('channel_message_id') is not None
             firebase.send_volunteer_message(args['channel_message_id'], args['volunteer_id'], args['message'])
-            print('ndjnsdkjdskjsdkjdskjdskjdsjk')
-            print(f'http://{HOST_PORT}/answer')
 
 
 class FrequentQuestions(Resource):

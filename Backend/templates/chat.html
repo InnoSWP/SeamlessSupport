@@ -17,7 +17,7 @@
         <script type="text/javascript" charset="utf-8">
             var socket;
             $(document).ready(function(){
-                socket = io.connect('http://0.0.0.0:5000/chat');
+                socket = io.connect('http://10.90.138.120:5000/chat');
                 socket.on('connect', function() {
                     socket.emit('join', {});
                 });

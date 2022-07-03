@@ -34,9 +34,9 @@
       const regEx = /[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,8}(.[a-z{2,8}])?/g;
       if(regEx.test(document.getElementById("email").value)){
        
-        fetch('http://0.0.0.0:5000/', {
+        fetch('http://10.90.138.120:5000/', {
           method: 'POST',
-          url: 'http://0.0.0.0:5000/chat'        })
+          url: 'http://10.90.138.120:5000/'        })
        form.setAttribute("action", "/chat");
       }else{
         alert("Invalid Email");
@@ -48,9 +48,9 @@
 document.getElementById("frm").onsubmit = function () {
         const regEx = /[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,8}(.[a-z{2,8}])?/g;
       if(regEx.test(document.getElementById("email").value)){
-        fetch('http://0.0.0.0:5000/', {
+        fetch('http://10.90.138.120:5000/', {
           method: 'POST',
-         url: 'http://0.0.0.0:5000/chat'        })
+         url: 'http://10.90.138.120:5000/chat'        })
        form.setAttribute("action", "/chat");
    
       }else{

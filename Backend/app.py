@@ -1,10 +1,7 @@
 from datetime import timedelta
-import requests
-import socket
 
 
 from flask import Flask, render_template, request, redirect, url_for, session
-from flask_cors import CORS
 from flask_socketio import SocketIO, join_room, leave_room, emit
 from flask_session import Session
 from flask_restful import Api, reqparse
@@ -19,7 +16,6 @@ dotenv.load_dotenv(dotenv.find_dotenv())
 
 app = Flask(__name__)
 app.debug = True
-cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 app.config['SECRET_KEY'] = getenv('SECRET_KEY')
 app.config['SESSION_TYPE'] = 'filesystem'
@@ -113,4 +109,4 @@ api.add_resource(resources.VolunteerClosed, '/api/v1/volunteers/<int:volunteer_i
 api.add_resource(resources.FrequentQuestions, '/api/v1/frequent-questions/<int:channel_message_id>')  # get
 api.add_resource(resources.Dialogue, '/api/v1/dialogues')  # post, get
 
-socketio.run(app, host='0.0.0.0', port='3000')
+socketio.run(app, host='0.0.0.0')

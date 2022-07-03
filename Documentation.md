@@ -114,8 +114,10 @@
 
 # Overview 
 
-A simple tool for seamless customer support across platforms by a volunteer team 
-[![Link to youtupe](https://img.youtube.com/vi/YOUTUBE_VIDEO_ID_HERE/0.jpg)](https://www.youtube.com/watch?v=nN4yr0TGbtQ)
+A simple tool for seamless customer support across platforms by a volunteer team.
+
+https://user-images.githubusercontent.com/47246441/177056975-5f5eefed-5874-48b6-8161-433f4c9bf418.mp4
+
 
 ## Motivation 
 

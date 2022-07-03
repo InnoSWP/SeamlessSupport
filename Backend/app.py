@@ -3,8 +3,9 @@ from datetime import timedelta
 
 from flask import Flask, render_template, request, redirect, url_for, session
 from flask_socketio import SocketIO, join_room, leave_room, emit
-from flask_session import Session
+from flask_cors import CORS
 from flask_restful import Api, reqparse
+from flask_session import Session
 import dotenv
 
 from os import getenv
@@ -22,6 +23,7 @@ app.config['SESSION_TYPE'] = 'filesystem'
 app.config['transports'] = 'websocket'
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=1)
 
+cors = CORS(app)
 api = Api(app)
 Session(app)
 
@@ -31,6 +33,11 @@ socketio = SocketIO(app, cors_allowed_origins="*")
 @app.route('/', methods=['GET', 'POST'])
 def index():
     return render_template('index.html')
+
+
+@app.route('/support', methods=['GET'])
+def support():
+    return render_template('support.html')
 
 
 @app.route('/answer', methods=['POST'])
@@ -63,10 +70,10 @@ def chat():
         # Store the data in session
         session['email'] = email
         session['room'] = firebase.get_user_id_by_email(email)
-        return render_template('./chat.html', session=session)
+        return render_template('chat.html', session=session)
     else:
         if session.get('room') is not None:
-            return render_template('./chat.html', session=session)
+            return render_template('chat.html', session=session)
         else:
             return redirect(url_for('index'))
 

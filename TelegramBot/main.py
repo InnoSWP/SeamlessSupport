@@ -39,6 +39,9 @@ dp = Dispatcher(bot)
 # Volatile, but effective as it will simplify code.
 storage = dict()
 
+# Host port
+HOST_PORT = '0.0.0.0:5000'
+
 
 @dp.message_handler(commands=['start'])
 async def start(message: Message):
@@ -51,6 +54,15 @@ async def start(message: Message):
         "My goal is to help managing open (non-answered) questions.\n"
         "To begin, join volunteer's chat and choose any question to answer"
     )
+
+
+@dp.message_handler(commands=['clear'])
+async def start(message: Message):
+    """
+    Start handler to help new volunteers understand bot
+    """
+
+    await bot.unpin_all_chat_messages(message.chat.id)
 
 
 @dp.message_handler(filters.is_private_chat)
@@ -73,7 +85,10 @@ async def volunteer_answer(message: Message):
             'volunteer_id': user_id,
             'is_user': False
         }
-        requests.post('http://127.0.0.1:5000/api/v1/dialogues', json=answer_json)
+
+        requests.post(f'http://{HOST_PORT}/api/v1/dialogues', json=answer_json)
+        requests.post(f'http://{HOST_PORT}/answer', json={'answer': answer, 'channel_message_id': channel_message_id})
+
         message = await bot.edit_message_text(
             chat_id=user_id,
             message_id=pinned_message.message_id,
@@ -133,7 +148,10 @@ async def answer_question(callback_query: CallbackQuery):
             await callback_query.answer('Please cancel your dialogue first to accept new one', show_alert=True)
             return
 
-    requests.post(f'http://127.0.0.1:5000/api/v1/volunteers/{user_id}/accepted/{message_id}')
+    print('start')
+    res = requests.post(f'http://{HOST_PORT}/api/v1/volunteers/{user_id}/accepted/{message_id}')
+    print(res.json(), res)
+    print('end')
 
     try:
         user_markup = generators.generate_inline_markup(
@@ -163,8 +181,8 @@ async def send_dialogue(callback_query: CallbackQuery):
     user_id = callback_query.from_user.id
     message_id = callback_query.message.message_id
 
-    question = requests.get(f'http://127.0.0.1:5000/api/v1/frequent-questions/{channel_message_id}').json()
-    dialogue: list[dict] = requests.get(f'http://127.0.0.1:5000/api/v1/users/{question["user_id"]}/dialogues', json={'read_messages': True}).json()
+    question = requests.get(f'http://{HOST_PORT}/api/v1/frequent-questions/{channel_message_id}').json()
+    dialogue: list = requests.get(f'http://{HOST_PORT}/api/v1/users/{question["user_id"]}/dialogues', json={'read_messages': True}).json()
     message_text = 'Your messages are going to be send in current dialogue:\n'
     for message in dialogue:
         icon = '👤' if message['is_user'] else '🧑‍💻'
@@ -194,7 +212,7 @@ async def cancel_dialogue(callback_query: CallbackQuery):
     message_id = callback_query.message.message_id
     user_id = callback_query.from_user.id
 
-    requests.post(f'http://127.0.0.1:5000/api/v1/volunteers/{user_id}/declined/{channel_message_id}')
+    requests.post(f'http://{HOST_PORT}/api/v1/volunteers/{user_id}/declined/{channel_message_id}')
 
     markup = generators.generate_inline_markup({'text': '✅ Answer the question', 'callback_data': 'answerQuestion'})
     await bot.edit_message_reply_markup(CHANNEL_ID, channel_message_id, reply_markup=markup)
@@ -212,8 +230,8 @@ async def cancel_answer(callback_query: CallbackQuery):
     message_id = callback_query.message.message_id
     user_id = callback_query.from_user.id
 
-    question = requests.get(f'http://127.0.0.1:5000/api/v1/frequent-questions/{channel_message_id}').json()
-    requests.get(f'http://127.0.0.1:5000/api/v1/users/{question["user_id"]}/dialogues', json={'read_messages': True}).json()
+    question = requests.get(f'http://{HOST_PORT}/api/v1/frequent-questions/{channel_message_id}').json()
+    requests.get(f'http://{HOST_PORT}/api/v1/users/{question["user_id"]}/dialogues', json={'read_messages': True}).json()
 
     await bot.unpin_all_chat_messages(user_id)
     await sleep(1)  # On some platforms telegram breaks without this break (e.x. Ubuntu 20)
@@ -236,13 +254,13 @@ async def finish_dialogue(callback_query: CallbackQuery):
     message_id = callback_query.message.message_id
     user_id = callback_query.from_user.id
 
-    question = requests.get(f'http://127.0.0.1:5000/api/v1/frequent-questions/{channel_message_id}').json()
-    dialogue: list[dict] = requests.get(f'http://127.0.0.1:5000/api/v1/users/{question["user_id"]}/dialogues', json={'read_messages': True}).json()
+    question = requests.get(f'http://{HOST_PORT}/api/v1/frequent-questions/{channel_message_id}').json()
+    dialogue: list[dict] = requests.get(f'http://{HOST_PORT}/api/v1/users/{question["user_id"]}/dialogues', json={'read_messages': True}).json()
     if all([message['is_user'] for message in dialogue]):
         await callback_query.answer('You should provide at least 1 answer to finish dialogue', show_alert=True)
         return
 
-    requests.post(f'http://127.0.0.1:5000/api/v1/volunteers/{user_id}/closed/{channel_message_id}')
+    requests.post(f'http://{HOST_PORT}/api/v1/volunteers/{user_id}/closed/{channel_message_id}')
     await bot.unpin_all_chat_messages(user_id)
     await sleep(1)  # On some platforms telegram breaks without break
     await bot.edit_message_text(

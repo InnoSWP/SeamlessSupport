@@ -134,23 +134,72 @@ Seamless support is a project focused on providing users with the ability to qui
 
 ## Python
 
-This project is written on [Python 3.10](https://www.python.org/downloads/release/python-3104/). It is important to have `PYTHON` added to the `PATH` to run the project from the console.
+This project is written on [Python 3.10](https://www.python.org/downloads/release/python-3104/). It is also important to have `PYTHON` and `PIP` added to the `PATH` to run the project from the console.
+
+P.S. We also tried to run project on [Python 3.8](https://www.python.org/downloads/release/python-382/), however special syntax `list[dict]` was used so project didn't compile. You can delete this part in `firebase.py` file, however it is not recommended. Please use modern versions of python.
+
 
 ## Libraries required
+All libraries could be seen in [requirements.txt](https://github.com/InnoSWP/SeamlessSupport/blob/deploy/requirements.txt).
+Download them by `pip install -r requirements.txt`
 
-Front-end : we just need to install the socket-io library and run the code or import it if you used Ajax like our project
+## How to create database
+1. Create project on [Firebase](https://console.firebase.google.com)
+2. Open `Realtime Database` -> `Rules` and edit file so that it will look like this.
+```json
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "users": {
+      ".indexOn": ["email"]
+    },
+    "frequent-questions":{
+      ".indexOn": ["user_id"]
+    }
+  }
+}
+```
 
-## How to create database 
 
-## How to set up database 
+## How to set up database
+1. Open your project on [Firebase](https://console.firebase.google.com/u/0/)
+2. Open `Project settings` -> `Service account` -> `Python` -> `Generate new private key`
+3. Save key as `seamless-support-firebase-adminsdk.json` on the `./Backend` level
+
 
 ## How to set up bot 
+1. Create new bot via [BotFather](https://t.me/BotFather)
+2. Copy `BOT_TOKEN` and add it to `.env` (see setup env further)
+3. Run your bot without configured `CHANNEL_ID` (see run step further)
+4. Add your bot to channel (Not chat) and give it admin right to send/edit/delete messages. Bot will send message with `CHANNEL_ID`
+5. Copy `CHANNEL_ID` and click `delete message` button.
+6. Add `CHANNEL_ID` and add it to `.env`
+
 
 ## How to set up env variables 
+Create `.env` file (or environment variables) on top level and set:
+```dotenv
+DATABASE_URL=https://<YOUR_PROJECT>.firebaseio.com/
+PASSWORD_ALPHABET=SYMBOLS_ACCEPTED_IN_PASSWORD
+SALT=SALT_FOR_PASSWORD
+BOT_TOKEN=1111111111:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+CHANNEL_ID=-1000000000000
+SECRET_KEY=$ecE1KeEYt0YouR@pp
+```
 
 ## How to launch server and bot 
+Server + API
+```shell
+$ cd Backend
+$ python3 app.py
+```
 
-* * *
+Telegram bot
+```shell
+$ cd TelegramBot
+$ python3 main.py
+```
 
 
 # How does the project works 

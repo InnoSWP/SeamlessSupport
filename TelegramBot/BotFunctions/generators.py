@@ -2,7 +2,7 @@ from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 import requests
 
-HOST_PORT = '0.0.0.0:5000'
+HOST_PORT = '10.90.138.120:5000'
 
 
 def generate_inline_markup(*args) -> InlineKeyboardMarkup:

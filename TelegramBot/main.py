@@ -40,7 +40,7 @@ dp = Dispatcher(bot)
 storage = dict()
 
 # Host port
-HOST_PORT = '0.0.0.0:5000'
+HOST_PORT = '10.90.138.120:5000'
 
 
 @dp.message_handler(commands=['start'])

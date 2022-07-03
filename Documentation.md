@@ -115,7 +115,7 @@
 # Overview 
 
 A simple tool for seamless customer support across platforms by a volunteer team 
-![Alt Text](https://drive.google.com/file/d/1YTg4PvEaNlVig7wZ19YggjgyXKw3s_Q_/view?usp=sharing)
+[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/YOUTUBE_VIDEO_ID_HERE/0.jpg)](https://www.youtube.com/watch?v=nN4yr0TGbtQ)
 
 ## Motivation 
 

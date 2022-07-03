@@ -137,12 +137,14 @@ def __send_message(user_id: str, message: str, is_user: bool) -> None:
 
 def get_automated_answer(message: str) -> str or None:
     keywords = __text_to_keywords(message)
+    if not keywords:
+        return
     ref = db.reference('/frequent-questions')
     questions: OrderedDict = ref.get()
     if questions is None:
         return
     for question in questions.values():
-        if question.get('answer') is None:
+        if question.get('answer') is None or question.get('keywords') is None:
             continue
         if set(question['keywords']) == set(keywords):
             return question['answer']

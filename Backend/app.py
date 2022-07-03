@@ -89,7 +89,7 @@ def join(message):
 def text(message):
     room = session.get('room')
     answer = firebase.get_automated_answer(message['msg'])
-    if answer:
+    if answer is not None:
         emit('message', {'msg': "  You" + ': ' + message['msg']}, room=room)
         emit('message', {'msg': "  Supporter: " + ': ' + answer}, room=room)
     else:

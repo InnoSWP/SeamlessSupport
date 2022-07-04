@@ -1,4 +1,10 @@
 # Seamless Support
+[![License](https://img.shields.io/github/license/InnoSWP/SeamlessSupport?color=violet&logoColor=red&style=for-the-badge)](https://github.com/InnoSWP/SeamlessSupport/blob/main/LICENSE)
+[![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)](https://www.python.org)
+[![Telegram](https://img.shields.io/badge/Telegram-2CA5E0?style=for-the-badge&logo=telegram&logoColor=white)](https://telegram.org)
+[![Flask](https://img.shields.io/badge/flask-%23000.svg?style=for-the-badge&logo=flask&logoColor=white)](https://flask.palletsprojects.com/en/2.1.x/)
+[![Firebase](https://img.shields.io/badge/firebase-%23039BE5.svg?style=for-the-badge&logo=firebase)](https://console.firebase.google.com)
+[![Socket.io](https://img.shields.io/badge/Socket.io-black?style=for-the-badge&logo=socket.io&badgeColor=010101)](https://flask-socketio.readthedocs.io/en/latest/)
 
 ## Summer 2022
 

@@ -8,14 +8,14 @@
 
 ## Summer 2022
 
-# **Contents:**
+# Contents
 
 - [Seamless Support](#seamless-support)
   * [Summer 2022](#summer-2022)
-- [**Contents:**](#--contents---)
+- [Contents](#contents)
 - [Overview](#overview)
   * [Motivation](#motivation)
-  * [What is Seamless Support?](#what-is-seamless-support-)
+  * [What is Seamless Support](#what-is-seamless-support)
 - [Installation](#installation)
   * [Python](#python)
   * [Libraries required](#libraries-required)
@@ -39,115 +39,7 @@
   * [Interaction with client](#interaction-with-client)
   * [Difficulties](#difficulties)
   * [Status of the project](#status-of-the-project)
-  * [Are we keeping up with the deadlines?](#are-we-keeping-up-with-the-deadlines-)
-
-<table>
-  <tr>
-    <td>[1 Overview   . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .] </td>
-    <td>1</td>
-  </tr>
-  <tr>
-    <td>     1.1 Motivation . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . </td>
-    <td>1</td>
-  </tr>
-  <tr>
-    <td>     1.2 What is Seamless Support? . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . </td>
-    <td>1</td>
-  </tr>
-  <tr>
-    <td>2 Installation . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .</td>
-    <td>1</td>
-  </tr>
-  <tr>
-    <td>     2.1 Python  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .  </td>
-    <td>1</td>
-  </tr>
-  <tr>
-    <td>     2.2 libraries !!! . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . </td>
-    <td>1</td>
-  </tr>
-  <tr>
-    <td>     2.3 How to create a database . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . </td>
-    <td>1</td>
-  </tr>
-  <tr>
-    <td>     2.4 How to set up a database . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . </td>
-    <td>1</td>
-  </tr>
-  <tr>
-    <td>     2.5 How to set up bot .  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . </td>
-    <td>1</td>
-  </tr>
-  <tr>
-    <td>     2.6 How to set up env variables  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . </td>
-    <td>1</td>
-  </tr>
-  <tr>
-    <td>     2.7 How to launch server and bot  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . </td>
-    <td>1</td>
-  </tr>
-  <tr>
-    <td>3 How does the project works   . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .</td>
-    <td>1</td>
-  </tr>
-  <tr>
-    <td>     3.1 For clients . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . </td>
-    <td>1</td>
-  </tr>
-  <tr>
-    <td>     3.2 For volunteers . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . </td>
-    <td>1</td>
-  </tr>
-  <tr>
-    <td>4 About us   . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .</td>
-    <td>1</td>
-  </tr>
-  <tr>
-    <td>     4.1 Development team  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . </td>
-    <td>1</td>
-  </tr>
-  <tr>
-    <td>     4.2 Software testing  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . </td>
-    <td>1</td>
-  </tr>
-  <tr>
-    <td>     4.3 Project management  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . </td>
-    <td>1</td>
-  </tr>
-  <tr>
-    <td>     4.4 Stages of development  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . </td>
-    <td>1</td>
-  </tr>
-  <tr>
-    <td>          4.4.1 Sprint 1 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . </td>
-    <td>1</td>
-  </tr>
-  <tr>
-    <td>          4.4.2 Sprint 2 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . </td>
-    <td>1</td>
-  </tr>
-  <tr>
-    <td>          4.4.3 Sprint 3 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . </td>
-    <td>1</td>
-  </tr>
-  <tr>
-    <td>          4.4.4 Sprint 4 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . </td>
-    <td>1</td>
-  </tr>
-  <tr>
-    <td>     4.5 Interaction with client   . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .</td>
-    <td>1</td>
-  </tr>
-  <tr>
-    <td>     4.6 Difficulties . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . </td>
-    <td>1</td>
-  </tr>
-  <tr>
-    <td>5 Status of the project . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . </td>
-    <td>1</td>
-  </tr>
-</table>
-
+  * [Are we keeping up with the deadlines](#are-we-keeping-up-with-the-deadlines)
 
 # Overview 
 
@@ -263,15 +155,18 @@ In telegram volunteers need to be added in the chanell with questions, then the 
 1. Open the channel with questions.
 
 2. Choose the questions that you are able to answer and click button ‘Answer the question’
+
 ![image_0](https://user-images.githubusercontent.com/102278553/177534033-1a6a42fe-8890-452a-ba12-d26411079a06.png)
 
 3. Once you have accepted the question, bot will write to you saying that you have a new dialog in your own chat, and if you did it accidentally, then you can cancel it.
+
 ![image_1](https://user-images.githubusercontent.com/102278553/177534059-ba68ba7a-fa3b-4106-9a72-30ff7318bd44.png)
 
 4. After refreshing the page with dialogs, volunteers will see new dialog in it with this question.
 ![image_2](https://user-images.githubusercontent.com/102278553/177534076-e2d485a0-35b6-4486-ae8f-b9bae07e87c9.png)
 
 5. Then the volunteer can choose the dialog he wants to be in. Here he can answer the question by writing a message in telegram, go to another dialog (‘Go back’ button) or close the question (‘Finish dialog’ button).
+
 ![image_3](https://user-images.githubusercontent.com/102278553/177534110-ed3606fd-c18a-458b-8e0b-d5bc109e34d1.png)
 
 6. Once the volunteer finishes dialog, the question will disappear from the questions list.

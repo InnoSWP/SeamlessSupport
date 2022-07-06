@@ -10,9 +10,40 @@
 
 # **Contents:**
 
+- [Seamless Support](#seamless-support)
+  * [Summer 2022](#summer-2022)
+- [**Contents:**](#--contents---)
+- [Overview](#overview)
+  * [Motivation](#motivation)
+  * [What is Seamless Support?](#what-is-seamless-support-)
+- [Installation](#installation)
+  * [Python](#python)
+  * [Libraries required](#libraries-required)
+  * [How to create database](#how-to-create-database)
+  * [How to set up database](#how-to-set-up-database)
+  * [How to set up bot](#how-to-set-up-bot)
+  * [How to set up env variables](#how-to-set-up-env-variables)
+  * [How to launch server and bot](#how-to-launch-server-and-bot)
+- [How does the project works](#how-does-the-project-works)
+  * [For clients](#for-clients)
+  * [For volunteers](#for-volunteers)
+- [About us](#about-us)
+  * [Development team](#development-team)
+  * [Software testing](#software-testing)
+  * [Project management](#project-management)
+  * [Stages of development](#stages-of-development)
+    + [Sprint 1](#sprint-1)
+    + [Sprint 2](#sprint-2)
+    + [Sprint 3](#sprint-3)
+    + [Sprint 4](#sprint-4)
+  * [Interaction with client](#interaction-with-client)
+  * [Difficulties](#difficulties)
+  * [Status of the project](#status-of-the-project)
+  * [Are we keeping up with the deadlines?](#are-we-keeping-up-with-the-deadlines-)
+
 <table>
   <tr>
-    <td>1 Overview   . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . </td>
+    <td>[1 Overview   . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .] </td>
     <td>1</td>
   </tr>
   <tr>
@@ -232,16 +263,16 @@ In telegram volunteers need to be added in the chanell with questions, then the 
 1. Open the channel with questions.
 
 2. Choose the questions that you are able to answer and click button ‘Answer the question’
-![image alt text](image_0.png)
+![image_0](https://user-images.githubusercontent.com/102278553/177534033-1a6a42fe-8890-452a-ba12-d26411079a06.png)
 
 3. Once you have accepted the question, bot will write to you saying that you have a new dialog in your own chat, and if you did it accidentally, then you can cancel it.
-![image alt text](image_1.png)
+![image_1](https://user-images.githubusercontent.com/102278553/177534059-ba68ba7a-fa3b-4106-9a72-30ff7318bd44.png)
 
 4. After refreshing the page with dialogs, volunteers will see new dialog in it with this question.
-![image alt text](image_2.png)
+![image_2](https://user-images.githubusercontent.com/102278553/177534076-e2d485a0-35b6-4486-ae8f-b9bae07e87c9.png)
 
 5. Then the volunteer can choose the dialog he wants to be in. Here he can answer the question by writing a message in telegram, go to another dialog (‘Go back’ button) or close the question (‘Finish dialog’ button).
-![image alt text](image_3.png)
+![image_3](https://user-images.githubusercontent.com/102278553/177534110-ed3606fd-c18a-458b-8e0b-d5bc109e34d1.png)
 
 6. Once the volunteer finishes dialog, the question will disappear from the questions list.
 

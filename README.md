@@ -10,9 +10,6 @@
 
 # Contents
 
-- [Seamless Support](#seamless-support)
-  * [Summer 2022](#summer-2022)
-- [Contents](#contents)
 - [Overview](#overview)
   * [Motivation](#motivation)
   * [What is Seamless Support](#what-is-seamless-support)
@@ -39,7 +36,7 @@
   * [Interaction with client](#interaction-with-client)
   * [Difficulties](#difficulties)
   * [Status of the project](#status-of-the-project)
-  * [Are we keeping up with the deadlines](#are-we-keeping-up-with-the-deadlines)
+  * [Final product](#final-product)
 
 # Overview 
 
@@ -379,7 +376,13 @@ On all of the above mentioned points our team had several weeks. It is clear tha
 
 As was mentioned before, the area of application of this project is wide, so there's still a lot of work to do. However, our team is glad to say that the most important things are already done and wait for further improvement. 
 
-## Are we keeping up with the deadlines? 
+# Final product
 
-For now we did almost everything that we planned to do till the end of this month. All parts are already ready to use, the only thing that remains is to connectall of them. 
+You can test the result of our work here:
+
+[Site with seamless support service](http://10.90.138.120:5000) (**important:** use Innopolis University network to achieve the site, and open it from your PC)
+
+[Telegram bot](https://t.me/testSeamlessSupport)
+
+To see the result of integration you can use abovementioned resources to see how they can look in your product!
 
